@@ -2,17 +2,24 @@
 import os, sys
 import hashlib
 import stat
+from pytube import YouTube
+
 
 
 # duplicates file
 def findDup(parentFolder):
     # Dups in format {hash:[names]}
-    # testing_path = 'W:\Work\PythianTask\TestingDir\\1'
-    # linking = os.link(testing_path, 'tap')
+    testing_path = 'W:\Work\PythianTask\TestingDir\\1'
+    # linking = gos.link(testing_path, 'tap')
     # os.chmod(testing_path, stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
     # print(os.readlink(testing_path))
+    fileList = []
+    fileList = os.listdir(testing_path)
+    # print('>>>>>>>>>>>>>>>>>>>>>>>> Listing' % fileList)
 
+    count = 0
     dups = {}
+
     for dirName, subdirs, fileList in os.walk(parentFolder):
         print('Scanning %s...' % dirName)
         for filename in fileList:
@@ -21,10 +28,13 @@ def findDup(parentFolder):
             # Calculate hash
             file_hash = hashfile(path)
             # Add or append the file path
+            count = count + 1
             if file_hash in dups:
                 dups[file_hash].append(path)
             else:
                 dups[file_hash] = [path]
+
+    print('>>>>>>> Count : %d ', str(count))
     return dups
 
 
@@ -48,20 +58,6 @@ def hashfile(path, blocksize=65536):
     return hasher.hexdigest()
 
 
-def printResults(dict1):
-    results = list(filter(lambda x: len(x) > 1, dict1.values()))
-    if len(results) > 0:
-        print('Duplicates Found:')
-        print('The following files are identical. The name could differ, but the content is identical')
-        print('___________________')
-        for result in results:
-            for subresult in result:
-                print('\t\t%s' % subresult)
-            print('___________________')
-
-    else:
-        print('No duplicate files found.')
-
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
@@ -75,7 +71,7 @@ if __name__ == '__main__':
             else:
                 print('%s is not a valid path, please verify' % i)
                 sys.exit()
-        printResults(dups)
+        # printResults(dups)
     else:
         print('Usage: python dupFinder.py folder or python dupFinder.py folder1 folder2 folder3')
 
